@@ -13,7 +13,7 @@ class BaseTest(unittest.TestCase):
 
     def load_from_file(self, json_file):
         cwd = os.path.dirname(__file__)
-        with open(os.path.join(cwd, 'data/%s' % json_file), 'r') as f:
+        with open(os.path.join(cwd, f'data/{json_file}'), 'r') as f:
             return f.read()
 
     def split_url(self, url):
@@ -40,10 +40,6 @@ class BaseTest(unittest.TestCase):
         self.assertEqual(qlist1, qlist2)
 
     def assert_get_url_equal(self, url1, url2):
-        if "?" in url2:
-            url2 += "&"
-        else:
-            url2 += "?"
-
+        url2 += "&" if "?" in url2 else "?"
         url2 += "per_page=%d" % DEFAULT_PER_PAGE
         return self.assert_url_query_equal(url1, url2)

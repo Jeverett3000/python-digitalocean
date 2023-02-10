@@ -19,7 +19,7 @@ class TestImage(BaseTest):
     @responses.activate
     def test_load(self):
         data = self.load_from_file('images/single.json')
-        url = "{}images/{}".format(self.base_url, self.image.id)
+        url = f"{self.base_url}images/{self.image.id}"
 
         responses.add(responses.GET,
                       url,
@@ -42,7 +42,7 @@ class TestImage(BaseTest):
     def test_load_by_slug(self):
         """Test loading image by slug."""
         data = self.load_from_file('images/slug.json')
-        url = "{}images/{}".format(self.base_url, self.image_with_slug.slug)
+        url = f"{self.base_url}images/{self.image_with_slug.slug}"
         responses.add(responses.GET,
                       url,
                       body=data,
@@ -67,7 +67,7 @@ class TestImage(BaseTest):
     @responses.activate
     def test_create(self):
         data = self.load_from_file('images/create.json')
-        url = self.base_url + "images"
+        url = f"{self.base_url}images"
 
         responses.add(responses.POST,
                       url,
@@ -95,31 +95,37 @@ class TestImage(BaseTest):
 
     @responses.activate
     def test_destroy(self):
-        responses.add(responses.DELETE,
-                      '{}images/{}/'.format(self.base_url, self.image.id),
-                      status=204,
-                      content_type='application/json')
+        responses.add(
+            responses.DELETE,
+            f'{self.base_url}images/{self.image.id}/',
+            status=204,
+            content_type='application/json',
+        )
 
         self.image.destroy()
 
-        self.assertEqual(responses.calls[0].request.url,
-                         self.base_url + 'images/449676856/')
+        self.assertEqual(
+            responses.calls[0].request.url, f'{self.base_url}images/449676856/'
+        )
 
     @responses.activate
     def test_transfer(self):
         data = self.load_from_file('images/transfer.json')
 
-        responses.add(responses.POST,
-                      '{}images/{}/actions/'.format(
-                        self.base_url, self.image.id),
-                      body=data,
-                      status=201,
-                      content_type='application/json')
+        responses.add(
+            responses.POST,
+            f'{self.base_url}images/{self.image.id}/actions/',
+            body=data,
+            status=201,
+            content_type='application/json',
+        )
 
         res = self.image.transfer(new_region_slug='lon1')
 
-        self.assertEqual(responses.calls[0].request.url,
-                         self.base_url + 'images/449676856/actions/')
+        self.assertEqual(
+            responses.calls[0].request.url,
+            f'{self.base_url}images/449676856/actions/',
+        )
         self.assertEqual(res['action']['type'], 'transfer')
         self.assertEqual(res['action']['status'], 'in-progress')
         self.assertEqual(res['action']['id'], 68212728)
@@ -128,16 +134,19 @@ class TestImage(BaseTest):
     def test_rename(self):
         data = self.load_from_file('images/rename.json')
 
-        responses.add(responses.PUT,
-                      '{}images/{}'.format(self.base_url, self.image.id),
-                      body=data,
-                      status=200,
-                      content_type='application/json')
+        responses.add(
+            responses.PUT,
+            f'{self.base_url}images/{self.image.id}',
+            body=data,
+            status=200,
+            content_type='application/json',
+        )
 
         res = self.image.rename(new_name='Descriptive name')
 
-        self.assertEqual(responses.calls[0].request.url,
-                         self.base_url + 'images/449676856')
+        self.assertEqual(
+            responses.calls[0].request.url, f'{self.base_url}images/449676856'
+        )
         self.assertEqual(res['image']['name'], 'Descriptive name')
 
     def test_is_string(self):

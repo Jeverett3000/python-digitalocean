@@ -102,9 +102,7 @@ class Image(BaseAPI):
                   'description': self.description,
                   'tags': self.tags}
 
-        data = self.get_data('images', type=POST, params=params)
-
-        if data:
+        if data := self.get_data('images', type=POST, params=params):
             for attr in data['image'].keys():
                 setattr(self, attr, data['image'][attr])
 
@@ -117,13 +115,10 @@ class Image(BaseAPI):
             Loads by id, or by slug if id is not present or use slug is True.
         """
         identifier = None
-        if use_slug or not self.id:
-            identifier = self.slug
-        else:
-            identifier = self.id
+        identifier = self.slug if use_slug or not self.id else self.id
         if not identifier:
             raise NotFoundError("One of self.id or self.slug must be set.")
-        data = self.get_data("images/%s" % identifier)
+        data = self.get_data(f"images/{identifier}")
         image_dict = data['image']
 
         # Setting the attribute values
@@ -136,27 +131,23 @@ class Image(BaseAPI):
         """
             Destroy the image
         """
-        return self.get_data("images/%s/" % self.id, type=DELETE)
+        return self.get_data(f"images/{self.id}/", type=DELETE)
 
     def transfer(self, new_region_slug):
         """
             Transfer the image
         """
         return self.get_data(
-            "images/%s/actions/" % self.id,
+            f"images/{self.id}/actions/",
             type=POST,
-            params={"type": "transfer", "region": new_region_slug}
+            params={"type": "transfer", "region": new_region_slug},
         )
 
     def rename(self, new_name):
         """
             Rename an image
         """
-        return self.get_data(
-            "images/%s" % self.id,
-            type=PUT,
-            params={"name": new_name}
-        )
+        return self.get_data(f"images/{self.id}", type=PUT, params={"name": new_name})
 
     def __str__(self):
-        return "<Image: %s %s %s>" % (self.id, self.distribution, self.name)
+        return f"<Image: {self.id} {self.distribution} {self.name}>"

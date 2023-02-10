@@ -23,7 +23,7 @@ class Domain(BaseAPI):
 
     def load(self):
         # URL https://api.digitalocean.com/v2/domains
-        domains = self.get_data("domains/%s" % self.name)
+        domains = self.get_data(f"domains/{self.name}")
         domain = domains['domain']
 
         for attr in domain.keys():
@@ -34,7 +34,7 @@ class Domain(BaseAPI):
             Destroy the domain by name
         """
         # URL https://api.digitalocean.com/v2/domains/[NAME]
-        return self.get_data("domains/%s" % self.name, type=DELETE)
+        return self.get_data(f"domains/{self.name}", type=DELETE)
 
     def create_new_domain_record(self, *args, **kwargs):
         """
@@ -63,19 +63,19 @@ class Domain(BaseAPI):
 
         #  Optional Args
         if kwargs.get("priority", None) != None:
-            data['priority'] = kwargs.get("priority", None)
+            data['priority'] = kwargs.get("priority")
 
         if kwargs.get("port", None):
-            data['port'] = kwargs.get("port", None)
+            data['port'] = kwargs.get("port")
 
         if kwargs.get("weight", None) != None:
-            data['weight'] = kwargs.get("weight", None)
+            data['weight'] = kwargs.get("weight")
 
         if kwargs.get("ttl", None):
             data['ttl'] = kwargs.get("ttl", 1800)
 
         if kwargs.get("flags", None) != None:
-            data['flags'] = kwargs.get("flags", None)
+            data['flags'] = kwargs.get("flags")
 
         if kwargs.get("tag", None):
             data['tag'] = kwargs.get("tag", "issue")
@@ -83,11 +83,7 @@ class Domain(BaseAPI):
         if self.ttl:
             data['ttl'] = self.ttl
 
-        return self.get_data(
-            "domains/%s/records" % self.name,
-            type=POST,
-            params=data
-        )
+        return self.get_data(f"domains/{self.name}/records", type=POST, params=data)
 
     def update_domain_record(self, *args, **kwargs):
         """
@@ -105,24 +101,22 @@ class Domain(BaseAPI):
         }
 
         if kwargs.get("data", None):
-            data['data'] = kwargs.get("data", None)
+            data['data'] = kwargs.get("data")
 
         if kwargs.get("type", None):
-            data['type'] = kwargs.get("type", None)
+            data['type'] = kwargs.get("type")
 
         if kwargs.get("name", None):
-            data['name'] = kwargs.get("name", None)
+            data['name'] = kwargs.get("name")
 
         if kwargs.get("port", None):
-            data['port'] = kwargs.get("port", None)
+            data['port'] = kwargs.get("port")
 
         if kwargs.get("weight", None):
-            data['weight'] = kwargs.get("weight", None)
+            data['weight'] = kwargs.get("weight")
 
         return self.get_data(
-            "domains/%s/records/%s" % (data['domain'], data['id']),
-            type=PUT,
-            params=data
+            f"domains/{data['domain']}/records/{data['id']}", type=PUT, params=data
         )
 
     def delete_domain_record(self, *args, **kwargs):
@@ -131,10 +125,7 @@ class Domain(BaseAPI):
             'id': kwargs.get("id", None)
         }
 
-        return self.get_data(
-            "domains/%s/records/%s" % (self.name, data['id']),
-            type=DELETE
-        )
+        return self.get_data(f"domains/{self.name}/records/{data['id']}", type=DELETE)
 
     def create(self):
         """
@@ -146,8 +137,7 @@ class Domain(BaseAPI):
             "ip_address": self.ip_address,
         }
 
-        domain = self.get_data("domains", type=POST, params=data)
-        return domain
+        return self.get_data("domains", type=POST, params=data)
 
     def get_records(self, params=None):
         """
@@ -155,10 +145,10 @@ class Domain(BaseAPI):
         """
         if params is None:
             params = {}
-        
+
         # URL https://api.digitalocean.com/v2/domains/[NAME]/records/
         records = []
-        data = self.get_data("domains/%s/records/" % self.name, type=GET, params=params)
+        data = self.get_data(f"domains/{self.name}/records/", type=GET, params=params)
 
         for record_data in data['domain_records']:
 
@@ -169,4 +159,4 @@ class Domain(BaseAPI):
         return records
 
     def __str__(self):
-        return "%s" % (self.name)
+        return f"{self.name}"

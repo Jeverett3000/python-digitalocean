@@ -28,7 +28,7 @@ class Volume(BaseAPI):
         return volume
 
     def load(self):
-        data = self.get_data("volumes/%s" % self.id)
+        data = self.get_data(f"volumes/{self.id}")
         volume_dict = data['volume']
 
         # Setting the attribute values
@@ -57,18 +57,19 @@ class Volume(BaseAPI):
             description: string - text field to describe a volume
             tags: List[string], optional - the tags to be applied to the volume
         """
-        data = self.get_data('volumes/',
-                             type=POST,
-                             params={'name': self.name,
-                                     'region': self.region,
-                                     'size_gigabytes': self.size_gigabytes,
-                                     'description': self.description,
-                                     'filesystem_type': self.filesystem_type,
-                                     'filesystem_label': self.filesystem_label,
-                                     'tags': self.tags,
-                                     })
-
-        if data:
+        if data := self.get_data(
+            'volumes/',
+            type=POST,
+            params={
+                'name': self.name,
+                'region': self.region,
+                'size_gigabytes': self.size_gigabytes,
+                'description': self.description,
+                'filesystem_type': self.filesystem_type,
+                'filesystem_label': self.filesystem_label,
+                'tags': self.tags,
+            },
+        ):
             self.id = data['volume']['id']
             self.created_at = data['volume']['created_at']
 
@@ -94,19 +95,20 @@ class Volume(BaseAPI):
             description: string - text field to describe a volume
             tags: List[string], optional - the tags to be applied to the volume
         """
-        data = self.get_data('volumes/',
-                             type=POST,
-                             params={'name': self.name,
-                                     'snapshot_id': self.snapshot_id,
-                                     'region': self.region,
-                                     'size_gigabytes': self.size_gigabytes,
-                                     'description': self.description,
-                                     'filesystem_type': self.filesystem_type,
-                                     'filesystem_label': self.filesystem_label,
-                                     'tags': self.tags,
-                                     })
-
-        if data:
+        if data := self.get_data(
+            'volumes/',
+            type=POST,
+            params={
+                'name': self.name,
+                'snapshot_id': self.snapshot_id,
+                'region': self.region,
+                'size_gigabytes': self.size_gigabytes,
+                'description': self.description,
+                'filesystem_type': self.filesystem_type,
+                'filesystem_label': self.filesystem_label,
+                'tags': self.tags,
+            },
+        ):
             self.id = data['volume']['id']
             self.created_at = data['volume']['created_at']
 
@@ -116,7 +118,7 @@ class Volume(BaseAPI):
         """
             Destroy a volume
         """
-        return self.get_data("volumes/%s/" % self.id, type=DELETE)
+        return self.get_data(f"volumes/{self.id}/", type=DELETE)
 
     def attach(self, droplet_id, region):
         """
@@ -127,11 +129,9 @@ class Volume(BaseAPI):
             region: string - slug identifier for the region
         """
         return self.get_data(
-            "volumes/%s/actions/" % self.id,
+            f"volumes/{self.id}/actions/",
             type=POST,
-            params={"type": "attach",
-                    "droplet_id": droplet_id,
-                    "region": region}
+            params={"type": "attach", "droplet_id": droplet_id, "region": region},
         )
 
     def detach(self, droplet_id, region):
@@ -143,11 +143,9 @@ class Volume(BaseAPI):
             region: string - slug identifier for the region
         """
         return self.get_data(
-            "volumes/%s/actions/" % self.id,
+            f"volumes/{self.id}/actions/",
             type=POST,
-            params={"type": "detach",
-                    "droplet_id": droplet_id,
-                    "region": region}
+            params={"type": "detach", "droplet_id": droplet_id, "region": region},
         )
 
     def resize(self, size_gigabytes, region):
@@ -159,11 +157,13 @@ class Volume(BaseAPI):
             region: string - slug identifier for the region
         """
         return self.get_data(
-            "volumes/%s/actions/" % self.id,
+            f"volumes/{self.id}/actions/",
             type=POST,
-            params={"type": "resize",
-                    "size_gigabytes": size_gigabytes,
-                    "region": region}
+            params={
+                "type": "resize",
+                "size_gigabytes": size_gigabytes,
+                "region": region,
+            },
         )
 
     def snapshot(self, name):
@@ -174,9 +174,7 @@ class Volume(BaseAPI):
             name: string - a human-readable name for the snapshot
         """
         return self.get_data(
-            "volumes/%s/snapshots/" % self.id,
-            type=POST,
-            params={"name": name}
+            f"volumes/{self.id}/snapshots/", type=POST, params={"name": name}
         )
 
     def get_snapshots(self):
@@ -185,8 +183,8 @@ class Volume(BaseAPI):
 
         Args:
         """
-        data = self.get_data("volumes/%s/snapshots/" % self.id)
-        snapshots = list()
+        data = self.get_data(f"volumes/{self.id}/snapshots/")
+        snapshots = []
         for jsond in data[u'snapshots']:
             snapshot = Snapshot(**jsond)
             snapshot.token = self.tokens
@@ -196,4 +194,4 @@ class Volume(BaseAPI):
 
 
     def __str__(self):
-        return "<Volume: %s %s %s>" % (self.id, self.name, self.size_gigabytes)
+        return f"<Volume: {self.id} {self.name} {self.size_gigabytes}>"

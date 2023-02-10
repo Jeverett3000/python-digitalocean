@@ -15,7 +15,7 @@ class _targets(object):
         self.load_balancer_uids = []
         self.tags = []
 
-        for attr in kwargs.keys():
+        for attr in kwargs:
             setattr(self, attr, kwargs[attr])
 
 
@@ -162,19 +162,16 @@ class Firewall(BaseAPI):
         self.droplet_ids = data['firewall']['droplet_ids']
         self.tags = data['firewall']['tags']
 
-        in_rules = list()
-        for rule in data['firewall']['inbound_rules']:
-            in_rules.append(InboundRule(**rule))
+        in_rules = [InboundRule(**rule) for rule in data['firewall']['inbound_rules']]
         self.inbound_rules = in_rules
 
-        out_rules = list()
-        for rule in data['firewall']['outbound_rules']:
-            out_rules.append(OutboundRule(**rule))
+        out_rules = [
+            OutboundRule(**rule) for rule in data['firewall']['outbound_rules']
+        ]
         self.outbound_rules = out_rules
 
     def load(self):
-        data = self.get_data("firewalls/%s" % self.id)
-        if data:
+        if data := self.get_data(f"firewalls/{self.id}"):
             self._set_firewall_attributes(data)
 
         return self
@@ -188,9 +185,7 @@ class Firewall(BaseAPI):
                   'outbound_rules': jsonpickle.decode(outbound),
                   'tags': self.tags}
 
-        data = self.get_data('firewalls/', type=POST, params=params)
-
-        if data:
+        if data := self.get_data('firewalls/', type=POST, params=params):
             self._set_firewall_attributes(data)
 
         return self
@@ -204,9 +199,9 @@ class Firewall(BaseAPI):
         inbound = jsonpickle.encode(inbound_rule, unpicklable=False)
 
         return self.get_data(
-            "firewalls/%s/rules" % self.id,
+            f"firewalls/{self.id}/rules",
             type=POST,
-            params={"inbound_rules": jsonpickle.decode(inbound)}
+            params={"inbound_rules": jsonpickle.decode(inbound)},
         )
 
     def add_outbound(self, outbound_rule):
@@ -218,9 +213,9 @@ class Firewall(BaseAPI):
         outbound = jsonpickle.encode(outbound_rule, unpicklable=False)
 
         return self.get_data(
-            "firewalls/%s/rules" % self.id,
+            f"firewalls/{self.id}/rules",
             type=POST,
-            params={"outbound_rules": jsonpickle.decode(outbound)}
+            params={"outbound_rules": jsonpickle.decode(outbound)},
         )
 
     def remove_inbound(self, inbound_rule):
@@ -232,9 +227,9 @@ class Firewall(BaseAPI):
         inbound = jsonpickle.encode(inbound_rule, unpicklable=False)
 
         return self.get_data(
-            "firewalls/%s/rules" % self.id,
+            f"firewalls/{self.id}/rules",
             type=DELETE,
-            params={"inbound_rules": jsonpickle.decode(inbound)}
+            params={"inbound_rules": jsonpickle.decode(inbound)},
         )
 
     def remove_outbound(self, outbound_rule):
@@ -246,9 +241,9 @@ class Firewall(BaseAPI):
         outbound = jsonpickle.encode(outbound_rule, unpicklable=False)
 
         return self.get_data(
-            "firewalls/%s/rules" % self.id,
+            f"firewalls/{self.id}/rules",
             type=DELETE,
-            params={"outbound_rules": jsonpickle.decode(outbound)}
+            params={"outbound_rules": jsonpickle.decode(outbound)},
         )
 
     def add_droplets(self, droplet_ids):
@@ -256,9 +251,9 @@ class Firewall(BaseAPI):
             Add droplets to this Firewall.
         """
         return self.get_data(
-            "firewalls/%s/droplets" % self.id,
+            f"firewalls/{self.id}/droplets",
             type=POST,
-            params={"droplet_ids": droplet_ids}
+            params={"droplet_ids": droplet_ids},
         )
 
     def remove_droplets(self, droplet_ids):
@@ -266,9 +261,9 @@ class Firewall(BaseAPI):
             Remove droplets from this Firewall.
         """
         return self.get_data(
-            "firewalls/%s/droplets" % self.id,
+            f"firewalls/{self.id}/droplets",
             type=DELETE,
-            params={"droplet_ids": droplet_ids}
+            params={"droplet_ids": droplet_ids},
         )
 
     def add_tags(self, tags):
@@ -276,9 +271,7 @@ class Firewall(BaseAPI):
             Add tags to this Firewall.
         """
         return self.get_data(
-            "firewalls/%s/tags" % self.id,
-            type=POST,
-            params={"tags": tags}
+            f"firewalls/{self.id}/tags", type=POST, params={"tags": tags}
         )
 
     def remove_tags(self, tags):
@@ -286,9 +279,7 @@ class Firewall(BaseAPI):
             Remove tags from this Firewall.
         """
         return self.get_data(
-            "firewalls/%s/tags" % self.id,
-            type=DELETE,
-            params={"tags": tags}
+            f"firewalls/{self.id}/tags", type=DELETE, params={"tags": tags}
         )
 
     # TODO: Other Firewall calls (Add/Remove rules, Create / Delete etc)
@@ -297,7 +288,7 @@ class Firewall(BaseAPI):
         """
             Destroy the Firewall
         """
-        return self.get_data("firewalls/%s/" % self.id, type=DELETE)
+        return self.get_data(f"firewalls/{self.id}/", type=DELETE)
 
     def __str__(self):
-        return "<Firewall: %s %s>" % (self.id, self.name)
+        return f"<Firewall: {self.id} {self.name}>"

@@ -19,7 +19,7 @@ class TestManager(BaseTest):
     def test_get_account(self):
         data = self.load_from_file('account/account.json')
 
-        url = self.base_url + 'account/'
+        url = f'{self.base_url}account/'
         responses.add(responses.GET, url,
                       body=data,
                       status=200,
@@ -38,7 +38,7 @@ class TestManager(BaseTest):
     def test_get_balance(self):
         data = self.load_from_file('balance/balance.json')
 
-        url = self.base_url + 'customers/my/balance'
+        url = f'{self.base_url}customers/my/balance'
         responses.add(responses.GET, url,
                       body=data,
                       status=200,
@@ -57,7 +57,7 @@ class TestManager(BaseTest):
     def test_auth_fail(self):
         data = self.load_from_file('errors/unauthorized.json')
 
-        url = self.base_url + 'regions/'
+        url = f'{self.base_url}regions/'
         responses.add(responses.GET, url,
                       body=data,
                       status=401,
@@ -74,7 +74,7 @@ class TestManager(BaseTest):
     def test_droplets(self):
         data = self.load_from_file('droplets/all.json')
 
-        url = self.base_url + 'droplets/'
+        url = f'{self.base_url}droplets/'
         responses.add(responses.GET, url,
                       body=data,
                       status=200,
@@ -110,12 +110,14 @@ class TestManager(BaseTest):
     def test_get_droplets_by_tag(self):
         data = self.load_from_file('droplets/bytag.json')
 
-        url = self.base_url + "droplets"
-        responses.add(responses.GET,
-                      url + "/",
-                      body=data,
-                      status=200,
-                      content_type='application/json')
+        url = f"{self.base_url}droplets"
+        responses.add(
+            responses.GET,
+            f"{url}/",
+            body=data,
+            status=200,
+            content_type='application/json',
+        )
 
         # The next pages don"t use trailing slashes. Return an empty result
         # to prevent an infinite loop
@@ -157,7 +159,7 @@ class TestManager(BaseTest):
     def test_get_all_regions(self):
         data = self.load_from_file('regions/all.json')
 
-        url = self.base_url + 'regions/'
+        url = f'{self.base_url}regions/'
         responses.add(responses.GET, url,
                       body=data,
                       status=200,
@@ -180,7 +182,7 @@ class TestManager(BaseTest):
     def test_get_all_sizes(self):
         data = self.load_from_file('sizes/all.json')
 
-        url = self.base_url + 'sizes/'
+        url = f'{self.base_url}sizes/'
         responses.add(responses.GET, url,
                       body=data,
                       status=200,
@@ -203,7 +205,7 @@ class TestManager(BaseTest):
     def test_get_image(self):
         """Test get image by id."""
         data = self.load_from_file('images/single.json')
-        url = "{}images/{}".format(self.base_url, self.image.id)
+        url = f"{self.base_url}images/{self.image.id}"
 
         responses.add(responses.GET,
                       url,
@@ -222,7 +224,7 @@ class TestManager(BaseTest):
     def test_get_image_by_slug(self):
         """Test get image by slug."""
         data = self.load_from_file('images/single.json')
-        url = "{}images/{}".format(self.base_url, self.image.slug)
+        url = f"{self.base_url}images/{self.image.slug}"
         responses.add(responses.GET,
                       url,
                       body=data,
@@ -240,7 +242,7 @@ class TestManager(BaseTest):
     def test_get_all_images(self):
         data = self.load_from_file('images/all.json')
 
-        url = self.base_url + 'images/'
+        url = f'{self.base_url}images/'
         responses.add(responses.GET, url,
                       body=data,
                       status=200,
@@ -263,7 +265,7 @@ class TestManager(BaseTest):
     def test_get_global_images(self):
         data = self.load_from_file('images/all.json')
 
-        url = self.base_url + 'images/'
+        url = f'{self.base_url}images/'
         responses.add(responses.GET, url,
                       body=data,
                       status=200,
@@ -286,7 +288,7 @@ class TestManager(BaseTest):
     def test_get_my_images(self):
         data = self.load_from_file('images/private.json')
 
-        url = self.base_url + 'images/'
+        url = f'{self.base_url}images/'
         responses.add(responses.GET,
                       url,
                       body=data,
@@ -314,7 +316,7 @@ class TestManager(BaseTest):
     def test_get_distro_images(self):
         data = self.load_from_file('images/distro.json')
 
-        url = self.base_url + 'images/'
+        url = f'{self.base_url}images/'
         responses.add(responses.GET,
                       url,
                       body=data,
@@ -338,7 +340,7 @@ class TestManager(BaseTest):
     def test_get_app_images(self):
         data = self.load_from_file('images/app.json')
 
-        url = self.base_url + 'images/'
+        url = f'{self.base_url}images/'
         responses.add(responses.GET, url,
                       body=data,
                       status=200,
@@ -361,7 +363,7 @@ class TestManager(BaseTest):
     def test_get_all_sshkeys(self):
         data = self.load_from_file('keys/all.json')
 
-        url = self.base_url + 'account/keys/'
+        url = f'{self.base_url}account/keys/'
         responses.add(responses.GET, url,
                       body=data,
                       status=200,
@@ -384,7 +386,7 @@ class TestManager(BaseTest):
     def test_post_new_ssh_key(self):
         data = self.load_from_file('keys/newly_posted.json')
 
-        url = self.base_url + 'account/keys/'
+        url = f'{self.base_url}account/keys/'
         responses.add(responses.POST, url,
                       body=data,
                       status=200,
@@ -405,7 +407,7 @@ class TestManager(BaseTest):
     def test_get_all_domains(self):
         data = self.load_from_file('domains/all.json')
 
-        url = self.base_url + 'domains/'
+        url = f'{self.base_url}domains/'
         responses.add(responses.GET, url,
                       body=data,
                       status=200,
@@ -425,7 +427,7 @@ class TestManager(BaseTest):
     def test_get_all_floating_ips(self):
         data = self.load_from_file('floatingip/list.json')
 
-        url = self.base_url + "floating_ips"
+        url = f"{self.base_url}floating_ips"
         responses.add(responses.GET,
                       url,
                       body=data,
@@ -441,7 +443,7 @@ class TestManager(BaseTest):
     def test_get_all_load_balancers(self):
         data = self.load_from_file('loadbalancer/all.json')
 
-        url = self.base_url + "load_balancers"
+        url = f"{self.base_url}load_balancers"
         responses.add(responses.GET,
                       url,
                       body=data,
@@ -471,7 +473,7 @@ class TestManager(BaseTest):
     def test_get_all_certificates(self):
         data = self.load_from_file('certificate/list.json')
 
-        url = self.base_url + "certificates"
+        url = f"{self.base_url}certificates"
         responses.add(responses.GET,
                       url,
                       body=data,
@@ -502,7 +504,7 @@ class TestManager(BaseTest):
     def test_get_all_volumes(self):
         data = self.load_from_file('volumes/all.json')
 
-        url = self.base_url + "volumes"
+        url = f"{self.base_url}volumes"
         responses.add(responses.GET,
                       url,
                       body=data,
@@ -523,7 +525,7 @@ class TestManager(BaseTest):
             volume for volume in data["volumes"]
             if volume["region"]["slug"] == "nyc1"]
 
-        url = self.base_url + "volumes?region=nyc1&per_page=200"
+        url = f"{self.base_url}volumes?region=nyc1&per_page=200"
         responses.add(responses.GET, url,
                       match_querystring=True,
                       body=json.dumps(data),
@@ -542,7 +544,7 @@ class TestManager(BaseTest):
             volume for volume in data["volumes"]
             if volume["name"] == "another-example"]
 
-        url = self.base_url + "volumes?name=another-example&per_page=200"
+        url = f"{self.base_url}volumes?name=another-example&per_page=200"
         responses.add(responses.GET, url,
                       match_querystring=True,
                       body=json.dumps(data),
@@ -558,7 +560,7 @@ class TestManager(BaseTest):
     def test_get_all_tags(self):
         data = self.load_from_file('tags/all.json')
 
-        url = self.base_url + 'tags'
+        url = f'{self.base_url}tags'
         responses.add(responses.GET, url,
                       body=data,
                       status=200,
@@ -574,7 +576,7 @@ class TestManager(BaseTest):
     def test_get_all_snapshots(self):
         data = self.load_from_file('snapshots/all.json')
 
-        url = self.base_url + 'snapshots/'
+        url = f'{self.base_url}snapshots/'
         responses.add(responses.GET, url,
                       body=data,
                       status=200,
@@ -593,7 +595,7 @@ class TestManager(BaseTest):
     def test_get_droplet_snapshots(self):
         data = self.load_from_file('snapshots/droplets.json')
 
-        url = self.base_url + 'snapshots?resource_type=droplet&per_page=200'
+        url = f'{self.base_url}snapshots?resource_type=droplet&per_page=200'
         responses.add(responses.GET, url,
                       match_querystring=True,
                       body=data,
@@ -614,7 +616,7 @@ class TestManager(BaseTest):
     def test_get_volume_snapshots(self):
         data = self.load_from_file('snapshots/volumes.json')
 
-        url = self.base_url + 'snapshots?resource_type=volume&per_page=200'
+        url = f'{self.base_url}snapshots?resource_type=volume&per_page=200'
         responses.add(responses.GET, url,
                       match_querystring=True,
                       body=data,
@@ -636,7 +638,7 @@ class TestManager(BaseTest):
     @responses.activate
     def test_get_all_projects(self):
         data = self.load_from_file('projects/all_projects_list.json')
-        url = self.base_url + 'projects'
+        url = f'{self.base_url}projects'
         responses.add(responses.GET, url,
                       body=data,
                       status=200,
@@ -659,7 +661,7 @@ class TestManager(BaseTest):
     @responses.activate
     def test_get_default_project(self):
         data = self.load_from_file('projects/default_project.json')
-        url = self.base_url + 'projects' + "/default"
+        url = f'{self.base_url}projects/default'
         responses.add(responses.GET, url,
                       body=data,
                       status=200,
@@ -682,7 +684,7 @@ class TestManager(BaseTest):
     def test_get_firewalls(self):
         data = self.load_from_file('firewalls/all.json')
 
-        url = self.base_url + "firewalls"
+        url = f"{self.base_url}firewalls"
         responses.add(responses.GET,
                       url,
                       body=data,
@@ -718,7 +720,7 @@ class TestManager(BaseTest):
     def test_get_vpc(self):
         data = self.load_from_file('vpcs/single.json')
         vpc_id = "5a4981aa-9653-4bd1-bef5-d6bff52042e4"
-        url = self.base_url + 'vpcs/' + vpc_id
+        url = f'{self.base_url}vpcs/{vpc_id}'
 
         responses.add(responses.GET,
                       url,
@@ -742,7 +744,7 @@ class TestManager(BaseTest):
     def test_get_all_vpcs(self):
         data = self.load_from_file('vpcs/list.json')
 
-        url = self.base_url + "vpcs"
+        url = f"{self.base_url}vpcs"
         responses.add(responses.GET,
                       url,
                       body=data,

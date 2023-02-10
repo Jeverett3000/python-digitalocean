@@ -14,7 +14,7 @@ class TestFirewall(BaseTest):
 
         data = self.load_from_file('firewalls/single.json')
 
-        url = self.base_url + "firewalls/12345"
+        url = f"{self.base_url}firewalls/12345"
         responses.add(responses.GET,
                       url,
                       body=data,
@@ -27,7 +27,7 @@ class TestFirewall(BaseTest):
     def test_load(self):
         data = self.load_from_file('firewalls/single.json')
 
-        url = self.base_url + "firewalls/12345"
+        url = f"{self.base_url}firewalls/12345"
         responses.add(responses.GET,
                       url,
                       body=data,
@@ -63,7 +63,7 @@ class TestFirewall(BaseTest):
     def test_add_droplets(self):
         data = self.load_from_file('firewalls/droplets.json')
 
-        url = self.base_url + "firewalls/12345/droplets"
+        url = f"{self.base_url}firewalls/12345/droplets"
         responses.add(responses.POST, url,
                       body=data,
                       status=204,
@@ -78,7 +78,7 @@ class TestFirewall(BaseTest):
     def test_remove_droplets(self):
         data = self.load_from_file('firewalls/droplets.json')
 
-        url = self.base_url + "firewalls/12345/droplets"
+        url = f"{self.base_url}firewalls/12345/droplets"
         responses.add(responses.DELETE,
                       url,
                       body=data,
@@ -94,7 +94,7 @@ class TestFirewall(BaseTest):
     def test_add_tags(self):
         data = self.load_from_file('firewalls/tags.json')
 
-        url = self.base_url + "firewalls/12345/tags"
+        url = f"{self.base_url}firewalls/12345/tags"
         responses.add(responses.POST, url,
                       body=data,
                       status=204,
@@ -109,7 +109,7 @@ class TestFirewall(BaseTest):
     def test_remove_tags(self):
         data = self.load_from_file('firewalls/tags.json')
 
-        url = self.base_url + "firewalls/12345/tags"
+        url = f"{self.base_url}firewalls/12345/tags"
         responses.add(responses.DELETE, url,
                       body=data,
                       status=204,
@@ -124,7 +124,7 @@ class TestFirewall(BaseTest):
     def test_add_inbound(self):
         data = self.load_from_file('firewalls/rules.json')
 
-        url = self.base_url + "firewalls/12345/rules"
+        url = f"{self.base_url}firewalls/12345/rules"
         responses.add(responses.POST, url,
                       body=data,
                       status=204,
@@ -139,7 +139,7 @@ class TestFirewall(BaseTest):
     def test_add_outbound(self):
         data = self.load_from_file('firewalls/rules.json')
 
-        url = self.base_url + "firewalls/12345/rules"
+        url = f"{self.base_url}firewalls/12345/rules"
         responses.add(responses.POST, url,
                       body=data,
                       status=204,
@@ -154,7 +154,7 @@ class TestFirewall(BaseTest):
     def test_remove_inbound(self):
         data = self.load_from_file('firewalls/rules.json')
 
-        url = self.base_url + "firewalls/12345/rules"
+        url = f"{self.base_url}firewalls/12345/rules"
         responses.add(responses.DELETE, url,
                       body=data,
                       status=204,
@@ -169,7 +169,7 @@ class TestFirewall(BaseTest):
     def test_remove_outbound(self):
         data = self.load_from_file('firewalls/rules.json')
 
-        url = self.base_url + "firewalls/12345/rules"
+        url = f"{self.base_url}firewalls/12345/rules"
         responses.add(responses.DELETE, url,
                       body=data,
                       status=204,
