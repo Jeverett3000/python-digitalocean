@@ -35,7 +35,7 @@ class TestVolume(BaseTest):
     def test_create(self):
         data = self.load_from_file('volumes/single.json')
 
-        url = self.base_url + "volumes/"
+        url = f"{self.base_url}volumes/"
         responses.add(responses.POST,
                       url,
                       body=data,
@@ -49,8 +49,7 @@ class TestVolume(BaseTest):
                                      filesystem_label='label',
                                      token=self.token).create()
 
-        self.assertEqual(responses.calls[0].request.url,
-                         self.base_url + "volumes/")
+        self.assertEqual(responses.calls[0].request.url, f"{self.base_url}volumes/")
         self.assertEqual(volume.id, "506f78a4-e098-11e5-ad9f-000f53306ae1")
         self.assertEqual(volume.size_gigabytes, 100)
         self.assertEqual(volume.filesystem_type, "ext4")
@@ -59,7 +58,7 @@ class TestVolume(BaseTest):
     def test_create_with_tags(self):
         data = self.load_from_file('volumes/single_with_tags.json')
 
-        url = self.base_url + "volumes/"
+        url = f"{self.base_url}volumes/"
         responses.add(responses.POST,
                       url,
                       body=data,
@@ -76,8 +75,7 @@ class TestVolume(BaseTest):
 
         self.assertEqual(volume.tags, ['tag1', 'tag2'])
 
-        self.assertEqual(responses.calls[0].request.url,
-                         self.base_url + "volumes/")
+        self.assertEqual(responses.calls[0].request.url, f"{self.base_url}volumes/")
         self.assertEqual(volume.id, "506f78a4-e098-11e5-ad9f-000f53306ae1")
         self.assertEqual(volume.size_gigabytes, 100)
         self.assertEqual(volume.filesystem_type, "ext4")
@@ -86,7 +84,7 @@ class TestVolume(BaseTest):
     def test_create_from_snapshot(self):
         data = self.load_from_file('volumes/single.json')
 
-        url = self.base_url + "volumes/"
+        url = f"{self.base_url}volumes/"
         responses.add(responses.POST,
                       url,
                       body=data,
@@ -101,8 +99,7 @@ class TestVolume(BaseTest):
                                      filesystem_label='label',
                                      token=self.token).create()
 
-        self.assertEqual(responses.calls[0].request.url,
-                         self.base_url + "volumes/")
+        self.assertEqual(responses.calls[0].request.url, f"{self.base_url}volumes/")
         self.assertEqual(volume.id, "506f78a4-e098-11e5-ad9f-000f53306ae1")
         self.assertEqual(volume.size_gigabytes, 100)
         self.assertEqual(volume.filesystem_type, "ext4")
@@ -124,7 +121,7 @@ class TestVolume(BaseTest):
     @responses.activate
     def test_attach(self):
         data = self.load_from_file('volumes/attach.json')
-        volume_path = "volumes/" + self.volume.id + "/actions/"
+        volume_path = f"volumes/{self.volume.id}/actions/"
 
         url = self.base_url + volume_path
         responses.add(responses.POST,
@@ -144,7 +141,7 @@ class TestVolume(BaseTest):
     @responses.activate
     def test_detach(self):
         data = self.load_from_file('volumes/detach.json')
-        volume_path = "volumes/" + self.volume.id + "/actions/"
+        volume_path = f"volumes/{self.volume.id}/actions/"
 
         url = self.base_url + volume_path
         responses.add(responses.POST,
@@ -164,7 +161,7 @@ class TestVolume(BaseTest):
     @responses.activate
     def test_resize(self):
         data = self.load_from_file('volumes/resize.json')
-        volume_path = "volumes/" + self.volume.id + "/actions/"
+        volume_path = f"volumes/{self.volume.id}/actions/"
 
         url = self.base_url + volume_path
         responses.add(responses.POST,
@@ -185,7 +182,7 @@ class TestVolume(BaseTest):
     @responses.activate
     def test_snapshot(self):
         data = self.load_from_file('volumes/snapshot.json')
-        volume_path = "volumes/" + self.volume.id + "/snapshots/"
+        volume_path = f"volumes/{self.volume.id}/snapshots/"
 
         url = self.base_url + volume_path
         responses.add(responses.POST,
@@ -206,7 +203,7 @@ class TestVolume(BaseTest):
     @responses.activate
     def test_get_snapshots(self):
         data = self.load_from_file('volumes/snapshots.json')
-        volume_path = "volumes/" + self.volume.id + "/snapshots/"
+        volume_path = f"volumes/{self.volume.id}/snapshots/"
 
         url = self.base_url + volume_path
         responses.add(responses.GET,

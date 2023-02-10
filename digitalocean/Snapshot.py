@@ -25,7 +25,7 @@ class Snapshot(BaseAPI):
         return snapshot
 
     def load(self):
-        data = self.get_data("snapshots/%s" % self.id)
+        data = self.get_data(f"snapshots/{self.id}")
         snapshot_dict = data['snapshot']
 
         # Setting the attribute values
@@ -38,7 +38,7 @@ class Snapshot(BaseAPI):
         """
             Destroy the image
         """
-        return self.get_data("snapshots/%s/" % self.id, type=DELETE)
+        return self.get_data(f"snapshots/{self.id}/", type=DELETE)
 
     def __str__(self):
-        return "<Snapshot: %s %s>" % (self.id, self.name)
+        return f"<Snapshot: {self.id} {self.name}>"

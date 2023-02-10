@@ -30,9 +30,7 @@ class Metadata(BaseAPI):
         response = requests.get(url, headers=headers, params=params,
                                 timeout=self.get_timeout())
 
-        if render_json:
-            return response.json()
-        return response.content
+        return response.json() if render_json else response.content
 
     def load(self):
         metadata = self.get_data("v1.json")
@@ -43,4 +41,4 @@ class Metadata(BaseAPI):
         return self
 
     def __str__(self):
-        return "<Metadata: %s>" % (self.droplet_id)
+        return f"<Metadata: {self.droplet_id}>"

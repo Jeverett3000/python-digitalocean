@@ -28,7 +28,7 @@ class TestBaseAPI(BaseTest):
     def test_user_agent(self):
         data = self.load_from_file('account/account.json')
 
-        url = self.base_url + 'account/'
+        url = f'{self.base_url}account/'
         responses.add(responses.GET, url,
                       body=data,
                       status=200,
@@ -42,7 +42,7 @@ class TestBaseAPI(BaseTest):
     @responses.activate
     def test_customize_session(self):
         data = self.load_from_file('account/account.json')
-        url = self.base_url + 'account/'
+        url = f'{self.base_url}account/'
         responses.add(responses.GET, url,
                       body=data,
                       status=200,

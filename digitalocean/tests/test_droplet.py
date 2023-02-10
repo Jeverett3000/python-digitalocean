@@ -12,10 +12,10 @@ class TestDroplet(BaseTest):
     @responses.activate
     def setUp(self):
         super(TestDroplet, self).setUp()
-        self.actions_url = self.base_url + "droplets/12345/actions/"
+        self.actions_url = f"{self.base_url}droplets/12345/actions/"
 
         data = self.load_from_file('droplets/single.json')
-        url = self.base_url + "droplets/12345"
+        url = f"{self.base_url}droplets/12345"
         responses.add(responses.GET,
                       url,
                       body=data,
@@ -27,7 +27,7 @@ class TestDroplet(BaseTest):
     def test_load(self):
         data = self.load_from_file('droplets/single.json')
 
-        url = self.base_url + "droplets/12345"
+        url = f"{self.base_url}droplets/12345"
         responses.add(responses.GET,
                       url,
                       body=data,
@@ -599,7 +599,7 @@ class TestDroplet(BaseTest):
 
     @responses.activate
     def test_destroy(self):
-        url = self.base_url + "droplets/12345"
+        url = f"{self.base_url}droplets/12345"
         responses.add(responses.DELETE,
                       url,
                       status=204,
@@ -607,8 +607,9 @@ class TestDroplet(BaseTest):
 
         self.droplet.destroy()
 
-        self.assertEqual(responses.calls[0].request.url,
-                         self.base_url + "droplets/12345")
+        self.assertEqual(
+            responses.calls[0].request.url, f"{self.base_url}droplets/12345"
+        )
 
     @responses.activate
     def test_rename(self):
@@ -791,7 +792,7 @@ class TestDroplet(BaseTest):
     def test_create_no_keys(self):
         data = self.load_from_file('droplet_actions/create.json')
 
-        url = self.base_url + "droplets/"
+        url = f"{self.base_url}droplets/"
         responses.add(responses.POST,
                       url,
                       body=data,
@@ -830,7 +831,7 @@ class TestDroplet(BaseTest):
     def test_create_multiple_no_keys(self):
         data = self.load_from_file('droplet_actions/create_multiple.json')
 
-        url = self.base_url + "droplets/"
+        url = f"{self.base_url}droplets/"
         responses.add(responses.POST,
                       url,
                       body=data,
@@ -879,14 +880,20 @@ class TestDroplet(BaseTest):
                       body=data,
                       status=200,
                       content_type='application/json')
-        responses.add(responses.GET, self.actions_url + "39388122",
-                      body=create,
-                      status=200,
-                      content_type='application/json')
-        responses.add(responses.GET, self.actions_url + "39290099",
-                      body=ipv6,
-                      status=200,
-                      content_type='application/json')
+        responses.add(
+            responses.GET,
+            f"{self.actions_url}39388122",
+            body=create,
+            status=200,
+            content_type='application/json',
+        )
+        responses.add(
+            responses.GET,
+            f"{self.actions_url}39290099",
+            body=ipv6,
+            status=200,
+            content_type='application/json',
+        )
 
         actions = self.droplet.get_actions()
 
@@ -894,10 +901,12 @@ class TestDroplet(BaseTest):
         self.assertEqual(len(responses.calls), 3)
         self.assert_get_url_equal(responses.calls[0].request.url,
                                   self.actions_url)
-        self.assert_get_url_equal(responses.calls[1].request.url,
-                                  self.actions_url + "39388122")
-        self.assert_get_url_equal(responses.calls[2].request.url,
-                                  self.actions_url + "39290099")
+        self.assert_get_url_equal(
+            responses.calls[1].request.url, f"{self.actions_url}39388122"
+        )
+        self.assert_get_url_equal(
+            responses.calls[2].request.url, f"{self.actions_url}39290099"
+        )
         self.assertEqual(actions[0].id, 39290099)
         self.assertEqual(actions[0].type, "create")
         self.assertEqual(actions[0].status, "completed")
@@ -909,7 +918,7 @@ class TestDroplet(BaseTest):
     def test_get_action(self):
         data = self.load_from_file('actions/create_completed.json')
 
-        url = self.base_url + "actions/39388122"
+        url = f"{self.base_url}actions/39388122"
         responses.add(responses.GET,
                       url,
                       body=data,
@@ -933,7 +942,7 @@ class TestDroplet(BaseTest):
     def test_get_kernel_available_no_pages(self):
         data = self.load_from_file('kernels/list.json')
 
-        url = self.base_url + "droplets/12345/kernels/"
+        url = f"{self.base_url}droplets/12345/kernels/"
         responses.add(responses.GET,
                       url,
                       body=data,
@@ -953,13 +962,13 @@ class TestDroplet(BaseTest):
         one = self.load_from_file('kernels/page_one.json')
         two = self.load_from_file('kernels/page_two.json')
 
-        url_0 = self.base_url + "droplets/12345/kernels/"
+        url_0 = f"{self.base_url}droplets/12345/kernels/"
         responses.add(responses.GET,
                       url_0,
                       body=one,
                       status=200,
                       content_type='application/json')
-        url_1 = self.base_url + "droplets/12345/kernels?page=2&per_page=200"
+        url_1 = f"{self.base_url}droplets/12345/kernels?page=2&per_page=200"
         responses.add(responses.GET,
                       url_1,
                       body=two,
@@ -983,8 +992,8 @@ class TestDroplet(BaseTest):
     def test_update_volumes_data(self):
         droplet_response = self.load_from_file('droplets/single.json')
         volume_response = self.load_from_file('volumes/single.json')
-        url_droplet =self.base_url + "droplets/12345"
-        url_volume = self.base_url +  "volumes/506f78a4-e098-11e5-ad9f-000f53306ae1"
+        url_droplet = f"{self.base_url}droplets/12345"
+        url_volume = f"{self.base_url}volumes/506f78a4-e098-11e5-ad9f-000f53306ae1"
         responses.add(responses.GET,
                       url_droplet,
                       body=droplet_response,

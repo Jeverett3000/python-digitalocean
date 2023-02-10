@@ -29,7 +29,7 @@ class FloatingIP(BaseAPI):
 
             Requires self.ip to be set.
         """
-        data = self.get_data('floating_ips/%s' % self.ip, type=GET)
+        data = self.get_data(f'floating_ips/{self.ip}', type=GET)
         floating_ip = data['floating_ip']
 
         # Setting the attribute values
@@ -48,11 +48,9 @@ class FloatingIP(BaseAPI):
             Args:
                 droplet_id: int - droplet id
         """
-        data = self.get_data('floating_ips/',
-                             type=POST,
-                             params={'droplet_id': self.droplet_id})
-
-        if data:
+        if data := self.get_data(
+            'floating_ips/', type=POST, params={'droplet_id': self.droplet_id}
+        ):
             self.ip = data['floating_ip']['ip']
             self.region = data['floating_ip']['region']
 
@@ -69,11 +67,9 @@ class FloatingIP(BaseAPI):
             Args:
                 region_slug: str - region's slug (e.g. 'nyc3')
         """
-        data = self.get_data('floating_ips/',
-                             type=POST,
-                             params={'region': self.region_slug})
-
-        if data:
+        if data := self.get_data(
+            'floating_ips/', type=POST, params={'region': self.region_slug}
+        ):
             self.ip = data['floating_ip']['ip']
             self.region = data['floating_ip']['region']
 
@@ -83,7 +79,7 @@ class FloatingIP(BaseAPI):
         """
             Destroy the FloatingIP
         """
-        return self.get_data('floating_ips/%s/' % self.ip, type=DELETE)
+        return self.get_data(f'floating_ips/{self.ip}/', type=DELETE)
 
     def assign(self, droplet_id):
         """
@@ -93,9 +89,9 @@ class FloatingIP(BaseAPI):
                 droplet_id: int - droplet id
         """
         return self.get_data(
-            "floating_ips/%s/actions/" % self.ip,
+            f"floating_ips/{self.ip}/actions/",
             type=POST,
-            params={"type": "assign", "droplet_id": droplet_id}
+            params={"type": "assign", "droplet_id": droplet_id},
         )
 
     def unassign(self):
@@ -103,10 +99,10 @@ class FloatingIP(BaseAPI):
             Unassign a FloatingIP.
         """
         return self.get_data(
-            "floating_ips/%s/actions/" % self.ip,
+            f"floating_ips/{self.ip}/actions/",
             type=POST,
-            params={"type": "unassign"}
+            params={"type": "unassign"},
         )
 
     def __str__(self):
-        return "%s" % (self.ip)
+        return f"{self.ip}"

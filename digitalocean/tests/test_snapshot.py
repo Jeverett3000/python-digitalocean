@@ -14,7 +14,7 @@ class TestSnapshot(BaseTest):
     @responses.activate
     def test_load(self):
         data = self.load_from_file('snapshots/single.json')
-        url = "{}snapshots/{}".format(self.base_url, self.snapshot.id)
+        url = f"{self.base_url}snapshots/{self.snapshot.id}"
 
         responses.add(responses.GET,
                       url,
@@ -33,15 +33,19 @@ class TestSnapshot(BaseTest):
 
     @responses.activate
     def test_destroy(self):
-        responses.add(responses.DELETE,
-                      '{}snapshots/{}/'.format(self.base_url, self.snapshot.id),
-                      status=204,
-                      content_type='application/json')
+        responses.add(
+            responses.DELETE,
+            f'{self.base_url}snapshots/{self.snapshot.id}/',
+            status=204,
+            content_type='application/json',
+        )
 
         self.snapshot.destroy()
 
-        self.assertEqual(responses.calls[0].request.url,
-                         self.base_url + 'snapshots/fbe805e8-866b-11e6-96bf-000f53315a41/')
+        self.assertEqual(
+            responses.calls[0].request.url,
+            f'{self.base_url}snapshots/fbe805e8-866b-11e6-96bf-000f53315a41/',
+        )
 
 if __name__ == '__main__':
     unittest.main()

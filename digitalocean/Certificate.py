@@ -72,7 +72,7 @@ class Certificate(BaseAPI):
 
             Requires self.id to be set.
         """
-        data = self.get_data("certificates/%s" % self.id)
+        data = self.get_data(f"certificates/{self.id}")
         certificate = data["certificate"]
 
         for attr in certificate.keys():
@@ -93,9 +93,7 @@ class Certificate(BaseAPI):
             "certificate_chain": self.certificate_chain
         }
 
-        data = self.get_data("certificates", type=POST, params=params)
-
-        if data:
+        if data := self.get_data("certificates", type=POST, params=params):
             self.id = data['certificate']['id']
             self.not_after = data['certificate']['not_after']
             self.sha1_fingerprint = data['certificate']['sha1_fingerprint']
@@ -110,7 +108,7 @@ class Certificate(BaseAPI):
         """
             Delete the Certificate
         """
-        return self.get_data("certificates/%s" % self.id, type=DELETE)
+        return self.get_data(f"certificates/{self.id}", type=DELETE)
 
     def __str__(self):
-        return "<Certificate: %s %s>" % (self.id, self.name)
+        return f"<Certificate: {self.id} {self.name}>"

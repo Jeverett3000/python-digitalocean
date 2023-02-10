@@ -15,7 +15,7 @@ class TestTags(BaseTest):
     def test_load(self):
         data = self.load_from_file('tags/single.json')
 
-        url = self.base_url + "tags/awesome"
+        url = f"{self.base_url}tags/awesome"
         responses.add(responses.GET,
                       url,
                       body=data,
@@ -34,7 +34,7 @@ class TestTags(BaseTest):
     def test_create(self):
         data = self.load_from_file('tags/single.json')
 
-        url = self.base_url + "tags"
+        url = f"{self.base_url}tags"
         responses.add(responses.POST,
                       url,
                       body=data,
@@ -44,14 +44,13 @@ class TestTags(BaseTest):
         droplet_tag = digitalocean.Tag(name='awesome', token=self.token)
         droplet_tag.create()
 
-        self.assertEqual(responses.calls[0].request.url,
-                         self.base_url + "tags")
+        self.assertEqual(responses.calls[0].request.url, f"{self.base_url}tags")
         self.assertEqual(droplet_tag.name, "awesome")
 
 
     @responses.activate
     def test_delete(self):
-        url = self.base_url + "tags/awesome"
+        url = f"{self.base_url}tags/awesome"
         responses.add(responses.DELETE,
                       url,
                       status=204,
@@ -60,14 +59,15 @@ class TestTags(BaseTest):
         droplet_tag = digitalocean.Tag(name='awesome', token=self.token)
         droplet_tag.delete()
 
-        self.assertEqual(responses.calls[0].request.url,
-                         self.base_url + "tags/awesome")
+        self.assertEqual(
+            responses.calls[0].request.url, f"{self.base_url}tags/awesome"
+        )
         self.assertEqual(droplet_tag.name, "awesome")
 
 
     @responses.activate
     def test_add_droplets(self):
-        url = self.base_url + "tags/awesome/resources"
+        url = f"{self.base_url}tags/awesome/resources"
         responses.add(responses.POST,
                       url,
                       status=204,
@@ -76,13 +76,15 @@ class TestTags(BaseTest):
         droplet_tag = digitalocean.Tag(name='awesome', token=self.token)
         droplet_tag.add_droplets(["9569411"])
 
-        self.assertEqual(responses.calls[0].request.url,
-                         self.base_url + "tags/awesome/resources")
+        self.assertEqual(
+            responses.calls[0].request.url,
+            f"{self.base_url}tags/awesome/resources",
+        )
 
 
     @responses.activate
     def test_remove_droplets(self):
-        url = self.base_url + "tags/awesome/resources"
+        url = f"{self.base_url}tags/awesome/resources"
         responses.add(responses.DELETE,
                       url,
                       status=204,
@@ -91,13 +93,15 @@ class TestTags(BaseTest):
         droplet_tag = digitalocean.Tag(name='awesome', token=self.token)
         droplet_tag.remove_droplets(["9569411"])
 
-        self.assertEqual(responses.calls[0].request.url,
-                         self.base_url + "tags/awesome/resources")
+        self.assertEqual(
+            responses.calls[0].request.url,
+            f"{self.base_url}tags/awesome/resources",
+        )
 
 
     @responses.activate
     def test_add_volume_snapshots(self):
-        url = self.base_url + "tags/awesome/resources"
+        url = f"{self.base_url}tags/awesome/resources"
         responses.add(responses.POST,
                       url,
                       status=204,
@@ -106,13 +110,15 @@ class TestTags(BaseTest):
         tag = digitalocean.Tag(name='awesome', token=self.token)
         tag.add_snapshots(["9569411"])
 
-        self.assertEqual(responses.calls[0].request.url,
-                         self.base_url + "tags/awesome/resources")
+        self.assertEqual(
+            responses.calls[0].request.url,
+            f"{self.base_url}tags/awesome/resources",
+        )
 
 
     @responses.activate
     def test_remove_volume_snapshots(self):
-        url = self.base_url + "tags/awesome/resources"
+        url = f"{self.base_url}tags/awesome/resources"
         responses.add(responses.DELETE,
                       url,
                       status=204,
@@ -121,8 +127,10 @@ class TestTags(BaseTest):
         tag = digitalocean.Tag(name='awesome', token=self.token)
         tag.remove_snapshots(["9569411"])
 
-        self.assertEqual(responses.calls[0].request.url,
-                         self.base_url + "tags/awesome/resources")
+        self.assertEqual(
+            responses.calls[0].request.url,
+            f"{self.base_url}tags/awesome/resources",
+        )
 
 
 if __name__ == '__main__':

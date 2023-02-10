@@ -20,7 +20,7 @@ class Tag(BaseAPI):
         """
            Fetch data about tag
         """
-        tags = self.get_data("tags/%s" % self.name)
+        tags = self.get_data(f"tags/{self.name}")
         tag = tags['tag']
 
         for attr in tag.keys():
@@ -33,31 +33,28 @@ class Tag(BaseAPI):
         """
             Create the tag.
         """
-        for attr in kwargs.keys():
+        for attr in kwargs:
             setattr(self, attr, kwargs[attr])
 
         params = {"name": self.name}
 
-        output = self.get_data("tags", type="POST", params=params)
-        if output:
+        if output := self.get_data("tags", type="POST", params=params):
             self.name = output['tag']['name']
             self.resources = output['tag']['resources']
 
 
     def delete(self):
-        return self.get_data("tags/%s" % self.name, type="DELETE")
+        return self.get_data(f"tags/{self.name}", type="DELETE")
 
 
     def __get_resources(self, resources, method):
 
         """ Method used to talk directly to the API (TAGs' Resources) """
-        tagged = self.get_data(
-            'tags/%s/resources' % self.name, params={
-                "resources": resources
-            },
+        return self.get_data(
+            f'tags/{self.name}/resources',
+            params={"resources": resources},
             type=method,
         )
-        return tagged
 
 
     def __add_resources(self, resources):
@@ -103,12 +100,12 @@ class Tag(BaseAPI):
             except NameError:
                 pass
 
-            if isinstance(resource_to_tag, str) or isinstance(resource_to_tag, int):
+            if isinstance(resource_to_tag, (str, int)):
                 res = {"resource_id": str(resource_to_tag)}
             elif isinstance(resource_to_tag, object_class):
                 res = {"resource_id": str(resource_to_tag.id)}
 
-            if len(res) > 0:
+            if res:
                 res["resource_type"] = resource_type
                 resources_field.append(res)
 
@@ -128,10 +125,7 @@ class Tag(BaseAPI):
 
         # Extracting data from the Droplet object
         resources = self.__build_resources_field(droplets, Droplet, "droplet")
-        if len(resources) > 0:
-            return self.__add_resources(resources)
-
-        return False
+        return self.__add_resources(resources) if len(resources) > 0 else False
 
 
     def remove_droplets(self, droplet):
@@ -147,10 +141,7 @@ class Tag(BaseAPI):
 
         # Build resources field from the Droplet objects
         resources = self.__build_resources_field(droplets, Droplet, "droplet")
-        if len(resources) > 0:
-            return self.__remove_resources(resources)
-
-        return False
+        return self.__remove_resources(resources) if len(resources) > 0 else False
 
 
     def add_snapshots(self, snapshots):
@@ -165,10 +156,7 @@ class Tag(BaseAPI):
             snapshots = [snapshots]
 
         resources = self.__build_resources_field(snapshots, Snapshot, "volume_snapshot")
-        if len(resources) > 0:
-            return self.__add_resources(resources)
-        
-        return False
+        return self.__add_resources(resources) if len(resources) > 0 else False
 
 
     def remove_snapshots(self, snapshots):
@@ -182,12 +170,9 @@ class Tag(BaseAPI):
             snapshots = [snapshots]
 
         resources = self.__build_resources_field(snapshots, Snapshot, "volume_snapshot")
-        if len(resources) > 0:
-            return self.__remove_resources(resources)
-        
-        return False
+        return self.__remove_resources(resources) if len(resources) > 0 else False
 
 
     def __str__(self):
-        return "<Tag: %s>" % self.name
+        return f"<Tag: {self.name}>"
 

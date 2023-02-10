@@ -113,7 +113,7 @@ class Droplet(BaseAPI):
         return droplet
 
     @classmethod
-    def create_multiple(*args, **kwargs):
+    def create_multiple(cls, **kwargs):
         api = BaseAPI(token=kwargs.get("token"))
 
         data = {
@@ -139,9 +139,7 @@ class Droplet(BaseAPI):
 
         droplets = []
 
-        data = api.get_data("droplets/", type=POST, params=data)
-
-        if data:
+        if data := api.get_data("droplets/", type=POST, params=data):
             action_ids = [data["links"]["actions"][0]["id"]]
             for droplet_json in data["droplets"]:
                 droplet_json["token"] = kwargs["token"]
@@ -155,24 +153,22 @@ class Droplet(BaseAPI):
         # reloading actions if actions is provided.
         if u"actions" in data:
             self.action_ids = []
-            for action in data[u'actions']:
-                self.action_ids.append(action[u'id'])
+            self.action_ids.extend(action[u'id'] for action in data[u'actions'])
 
     def get_data(self, *args, **kwargs):
         """
             Customized version of get_data to perform __check_actions_in_data
         """
         data = super(Droplet, self).get_data(*args, **kwargs)
-        if "type" in kwargs:
-            if kwargs["type"] == POST:
-                self.__check_actions_in_data(data)
+        if "type" in kwargs and kwargs["type"] == POST:
+            self.__check_actions_in_data(data)
         return data
 
     def load(self):
         """
            Fetch data about droplet - use this instead of get_data()
         """
-        droplets = self.get_data("droplets/%s" % self.id)
+        droplets = self.get_data(f"droplets/{self.id}")
         droplet = droplets['droplet']
 
         for attr in droplet.keys():
@@ -186,19 +182,9 @@ class Droplet(BaseAPI):
         if self.networks['v6']:
             self.ip_v6_address = self.networks['v6'][0]['ip_address']
 
-            if "backups" in self.features:
-                self.backups = True
-            else:
-                self.backups = False
-            if "ipv6" in self.features:
-                self.ipv6 = True
-            else:
-                self.ipv6 = False
-            if "private_networking" in self.features:
-                self.private_networking = True
-            else:
-                self.private_networking = False
-
+            self.backups = "backups" in self.features
+            self.ipv6 = "ipv6" in self.features
+            self.private_networking = "private_networking" in self.features
         if "tags" in droplets:
             self.tags = droplets["tags"]
 
@@ -218,19 +204,16 @@ class Droplet(BaseAPI):
             Returns dict or Action
         """
         action = self.get_data(
-            "droplets/%s/actions/" % self.id,
-            type=POST,
-            params=params
+            f"droplets/{self.id}/actions/", type=POST, params=params
         )
         if return_dict:
             return action
-        else:
-            action = action[u'action']
-            return_action = Action(token=self.tokens)
-            # Loading attributes
-            for attr in action.keys():
-                setattr(return_action, attr, action[attr])
-            return return_action
+        action = action[u'action']
+        return_action = Action(token=self.tokens)
+        # Loading attributes
+        for attr in action.keys():
+            setattr(return_action, attr, action[attr])
+        return return_action
 
     def power_on(self, return_dict=True):
         """
@@ -415,7 +398,7 @@ class Droplet(BaseAPI):
 
             Returns dict
         """
-        return self.get_data("droplets/%s" % self.id, type=DELETE)
+        return self.get_data(f"droplets/{self.id}", type=DELETE)
 
     def rename(self, name, return_dict=True):
         """Rename the droplet
@@ -488,7 +471,7 @@ class Droplet(BaseAPI):
             to DigitalOcean's API. This method is used to check and create a
             droplet with the correct SSH keys.
         """
-        ssh_keys_id = list()
+        ssh_keys_id = []
         for ssh_key in ssh_keys:
             if type(ssh_key) in [int, type(2 ** 64)]:
                 ssh_keys_id.append(int(ssh_key))
@@ -515,7 +498,7 @@ class Droplet(BaseAPI):
 
                     if results is None:
                         key.public_key = ssh_key
-                        key.name = "SSH Key %s" % name
+                        key.name = f"SSH Key {name}"
                         key.create()
                     else:
                         key = results
@@ -536,7 +519,7 @@ class Droplet(BaseAPI):
             Note: Every argument and parameter given to this method will be
             assigned to the object.
         """
-        for attr in kwargs.keys():
+        for attr in kwargs:
             setattr(self, attr, kwargs[attr])
 
         # Provide backwards compatibility
@@ -565,13 +548,10 @@ class Droplet(BaseAPI):
         if self.user_data:
             data["user_data"] = self.user_data
 
-        data = self.get_data("droplets/", type=POST, params=data)
-
-        if data:
+        if data := self.get_data("droplets/", type=POST, params=data):
             self.id = data['droplet']['id']
             action_id = data['links']['actions'][0]['id']
-            self.action_ids = []
-            self.action_ids.append(action_id)
+            self.action_ids = [action_id]
 
     def get_events(self):
         """
@@ -585,7 +565,7 @@ class Droplet(BaseAPI):
             Returns a list of Action objects
             This actions can be used to check the droplet's status
         """
-        answer = self.get_data("droplets/%s/actions/" % self.id, type=GET)
+        answer = self.get_data(f"droplets/{self.id}/actions/", type=GET)
 
         actions = []
         for action_dict in answer['actions']:
@@ -612,7 +592,7 @@ class Droplet(BaseAPI):
             This method will return the snapshots/images connected to that
             specific droplet.
         """
-        snapshots = list()
+        snapshots = []
         for id in self.snapshot_ids:
             snapshot = Image()
             snapshot.id = id
@@ -625,18 +605,18 @@ class Droplet(BaseAPI):
             Get a list of kernels available
         """
 
-        kernels = list()
-        data = self.get_data("droplets/%s/kernels/" % self.id)
+        kernels = []
+        data = self.get_data(f"droplets/{self.id}/kernels/")
         while True:
             for jsond in data[u'kernels']:
                 kernel = Kernel(**jsond)
                 kernel.token = self.tokens
                 kernels.append(kernel)
             try:
-                url = data[u'links'][u'pages'].get(u'next')
-                if not url:
-                        break
-                data = self.get_data(url)
+                if url := data[u'links'][u'pages'].get(u'next'):
+                    data = self.get_data(url)
+                else:
+                    break
             except KeyError:  # No links.
                 break
 
@@ -650,7 +630,7 @@ class Droplet(BaseAPI):
            collection) and will create list of object of Volume
            types. Each volume is a separate api call.
         """
-        self.volumes = list()
+        self.volumes = []
 
         for volume_id in self.volume_ids:
             volume = Volume().get_object(self.tokens, volume_id)
@@ -658,4 +638,4 @@ class Droplet(BaseAPI):
 
 
     def __str__(self):
-        return "<Droplet: %s %s>" % (self.id, self.name)
+        return f"<Droplet: {self.id} {self.name}>"

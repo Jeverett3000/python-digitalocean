@@ -30,23 +30,18 @@ class Action(BaseAPI):
         return action
 
     def load_directly(self):
-        action = self.get_data("actions/%s" % self.id)
-        if action:
+        if action := self.get_data(f"actions/{self.id}"):
             action = action[u'action']
             # Loading attributes
             for attr in action.keys():
                 setattr(self, attr, action[attr])
 
     def load(self):
-        if not self.droplet_id:
-            action = self.load_directly()
-        else:
-            action = self.get_data(
-                "droplets/%s/actions/%s" % (
-                    self.droplet_id,
-                    self.id
-                )
-            )
+        action = (
+            self.get_data(f"droplets/{self.droplet_id}/actions/{self.id}")
+            if self.droplet_id
+            else self.load_directly()
+        )
         if action:
             action = action[u'action']
             # Loading attributes
@@ -73,4 +68,4 @@ class Action(BaseAPI):
         return self.status == u'completed'
 
     def __str__(self):
-        return "<Action: %s %s %s>" % (self.id, self.type, self.status)
+        return f"<Action: {self.id} {self.type} {self.status}>"

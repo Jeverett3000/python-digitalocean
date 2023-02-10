@@ -32,7 +32,7 @@ class SSHKey(BaseAPI):
         elif self.fingerprint is not None:
             identifier = self.fingerprint
 
-        data = self.get_data("account/keys/%s" % identifier, type=GET)
+        data = self.get_data(f"account/keys/{identifier}", type=GET)
 
         ssh_key = data['ssh_key']
 
@@ -65,9 +65,7 @@ class SSHKey(BaseAPI):
             "public_key": self.public_key,
         }
 
-        data = self.get_data("account/keys/", type=POST, params=input_params)
-
-        if data:
+        if data := self.get_data("account/keys/", type=POST, params=input_params):
             self.id = data['ssh_key']['id']
 
     def edit(self):
@@ -79,20 +77,16 @@ class SSHKey(BaseAPI):
             "public_key": self.public_key,
         }
 
-        data = self.get_data(
-            "account/keys/%s" % self.id,
-            type=PUT,
-            params=input_params
-        )
-
-        if data:
+        if data := self.get_data(
+            f"account/keys/{self.id}", type=PUT, params=input_params
+        ):
             self.id = data['ssh_key']['id']
 
     def destroy(self):
         """
             Destroy the SSH Key
         """
-        return self.get_data("account/keys/%s" % self.id, type=DELETE)
+        return self.get_data(f"account/keys/{self.id}", type=DELETE)
 
     def __str__(self):
-        return "<SSHKey: %s %s>" % (self.id, self.name)
+        return f"<SSHKey: {self.id} {self.name}>"

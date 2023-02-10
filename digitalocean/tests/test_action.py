@@ -16,7 +16,7 @@ class TestAction(BaseTest):
     def test_load_directly(self):
         data = self.load_from_file('actions/ipv6_completed.json')
 
-        url = self.base_url + "actions/39388122"
+        url = f"{self.base_url}actions/39388122"
         responses.add(responses.GET,
                       url,
                       body=data,
@@ -34,7 +34,7 @@ class TestAction(BaseTest):
     def test_load_without_droplet_id(self):
         data = self.load_from_file('actions/ipv6_completed.json')
 
-        url = self.base_url + "actions/39388122"
+        url = f"{self.base_url}actions/39388122"
         responses.add(responses.GET,
                       url,
                       body=data,

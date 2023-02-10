@@ -21,7 +21,7 @@ class Record(BaseAPI):
     """
 
     def __init__(self, domain_name=None, *args, **kwargs):
-        self.domain = domain_name if domain_name else ""
+        self.domain = domain_name or ""
         self.id = None
         self.type = None
         self.name = None
@@ -73,23 +73,16 @@ class Record(BaseAPI):
             "tags": self.tags
         }
 
-        data = self.get_data(
-            "domains/%s/records" % (self.domain),
-            type=POST,
-            params=input_params,
-        )
-
-        if data:
+        if data := self.get_data(
+            f"domains/{self.domain}/records", type=POST, params=input_params
+        ):
             self.id = data['domain_record']['id']
 
     def destroy(self):
         """
             Destroy the record
         """
-        return self.get_data(
-            "domains/%s/records/%s" % (self.domain, self.id),
-            type=DELETE,
-        )
+        return self.get_data(f"domains/{self.domain}/records/{self.id}", type=DELETE)
 
     def save(self):
         """
@@ -107,15 +100,12 @@ class Record(BaseAPI):
             "tags": self.tags
         }
         return self.get_data(
-            "domains/%s/records/%s" % (self.domain, self.id),
-            type=PUT,
-            params=data
+            f"domains/{self.domain}/records/{self.id}", type=PUT, params=data
         )
 
     def load(self):
-        url = "domains/%s/records/%s" % (self.domain, self.id)
-        record = self.get_data(url)
-        if record:
+        url = f"domains/{self.domain}/records/{self.id}"
+        if record := self.get_data(url):
             record = record[u'domain_record']
 
             # Setting the attribute values
@@ -123,4 +113,4 @@ class Record(BaseAPI):
                 setattr(self, attr, record[attr])
 
     def __str__(self):
-        return "<Record: %s %s>" % (self.id, self.domain)
+        return f"<Record: {self.id} {self.domain}>"

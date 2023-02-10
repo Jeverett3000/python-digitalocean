@@ -17,7 +17,7 @@ class TestDomain(BaseTest):
     def test_load(self):
         data = self.load_from_file('domains/single.json')
 
-        url = self.base_url + "domains/example.com"
+        url = f"{self.base_url}domains/example.com"
         responses.add(responses.GET,
                       url,
                       body=data,
@@ -33,7 +33,7 @@ class TestDomain(BaseTest):
 
     @responses.activate
     def test_destroy(self):
-        url = self.base_url + "domains/example.com"
+        url = f"{self.base_url}domains/example.com"
         responses.add(responses.DELETE,
                       url,
                       status=204,
@@ -47,7 +47,7 @@ class TestDomain(BaseTest):
     def test_create_new_domain_record(self):
         data = self.load_from_file('domains/create_record.json')
 
-        url = self.base_url + "domains/example.com/records"
+        url = f"{self.base_url}domains/example.com/records"
         responses.add(responses.POST,
                       url,
                       body=data,
@@ -59,7 +59,8 @@ class TestDomain(BaseTest):
 
         self.assert_url_query_equal(
             responses.calls[0].request.url,
-            self.base_url + "domains/example.com/records")
+            f"{self.base_url}domains/example.com/records",
+        )
         self.assertEqual(json.loads(responses.calls[0].request.body),
                          {"type": "CNAME", "data": "@", "name": "www"})
         self.assertEqual(response['domain_record']['type'], "CNAME")
@@ -72,7 +73,7 @@ class TestDomain(BaseTest):
         data = self.load_from_file('domains/update_record.json')
         record_id = str(json.loads(data)['domain_record']['id'])
 
-        url = self.base_url + "domains/example.com/records/" + record_id
+        url = f"{self.base_url}domains/example.com/records/{record_id}"
         responses.add(responses.PUT,
                       url,
                       body=data,
@@ -84,7 +85,8 @@ class TestDomain(BaseTest):
 
         self.assert_url_query_equal(
             responses.calls[0].request.url,
-            self.base_url + "domains/example.com/records/" + record_id)
+            f"{self.base_url}domains/example.com/records/{record_id}",
+        )
         self.assertEqual(json.loads(responses.calls[0].request.body),
                          {"type": "CNAME", "id": record_id, "domain": "example.com", "data": "@", "name": "www"})
         self.assertEqual(response['domain_record']['type'], "CNAME")
@@ -95,7 +97,7 @@ class TestDomain(BaseTest):
     @responses.activate
     def test_delete_domain_record(self):
         record_id = "1234"
-        url = self.base_url + "domains/example.com/records/" + record_id
+        url = f"{self.base_url}domains/example.com/records/{record_id}"
         responses.add(responses.DELETE,
                       url,
                       status=204,
@@ -109,7 +111,7 @@ class TestDomain(BaseTest):
     def test_create_new_srv_record_zero_priority(self):
         data = self.load_from_file('domains/create_srv_record.json')
 
-        url = self.base_url + "domains/example.com/records"
+        url = f"{self.base_url}domains/example.com/records"
         responses.add(responses.POST,
                       url,
                       body=data,
@@ -121,7 +123,8 @@ class TestDomain(BaseTest):
 
         self.assert_url_query_equal(
             responses.calls[0].request.url,
-            self.base_url + "domains/example.com/records")
+            f"{self.base_url}domains/example.com/records",
+        )
         self.assertEqual(response['domain_record']['type'], "SRV")
         self.assertEqual(response['domain_record']['name'], "service")
         self.assertEqual(response['domain_record']['data'], "service")
@@ -132,7 +135,7 @@ class TestDomain(BaseTest):
     def test_create_new_caa_record_zero_flags(self):
         data = self.load_from_file('domains/create_caa_record.json')
 
-        url = self.base_url + "domains/example.com/records"
+        url = f"{self.base_url}domains/example.com/records"
         responses.add(responses.POST,
                       url,
                       body=data,
@@ -144,7 +147,8 @@ class TestDomain(BaseTest):
 
         self.assert_url_query_equal(
             responses.calls[0].request.url,
-            self.base_url + "domains/example.com/records")
+            f"{self.base_url}domains/example.com/records",
+        )
         self.assertEqual(response['domain_record']['type'], "CAA")
         self.assertEqual(response['domain_record']['name'], "@")
         self.assertEqual(response['domain_record']['data'], "letsencrypt.org.")
@@ -156,7 +160,7 @@ class TestDomain(BaseTest):
     def test_create(self):
         data = self.load_from_file( 'domains/create.json')
 
-        url = self.base_url + "domains"
+        url = f"{self.base_url}domains"
         responses.add(responses.POST,
                       url,
                       body=data,
@@ -168,7 +172,8 @@ class TestDomain(BaseTest):
                                      token=self.token).create()
 
         self.assert_url_query_equal(
-            responses.calls[0].request.url, self.base_url + "domains")
+            responses.calls[0].request.url, f"{self.base_url}domains"
+        )
         self.assertEqual(json.loads(responses.calls[0].request.body),
                          {'ip_address': '1.1.1.1', 'name': 'example.com'})
         self.assertEqual(domain['domain']['name'], "example.com")
@@ -178,7 +183,7 @@ class TestDomain(BaseTest):
     def test_get_records(self):
         data = self.load_from_file('domains/records.json')
 
-        url = self.base_url + "domains/example.com/records/"
+        url = f"{self.base_url}domains/example.com/records/"
         responses.add(responses.GET,
                       url,
                       body=data,

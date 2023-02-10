@@ -28,4 +28,4 @@ class Balance(BaseAPI):
             setattr(self, attr, balance[attr])
 
     def __str__(self):
-        return "<Balance: %s>" % (self.account_balance)
+        return f"<Balance: {self.account_balance}>"

@@ -17,7 +17,7 @@ class TestLoadBalancer(BaseTest):
     @responses.activate
     def test_load(self):
         data = self.load_from_file('loadbalancer/single.json')
-        url = self.base_url + 'load_balancers/' + self.lb_id
+        url = f'{self.base_url}load_balancers/{self.lb_id}'
 
         responses.add(responses.GET,
                       url,
@@ -54,7 +54,7 @@ class TestLoadBalancer(BaseTest):
     def test_create_ids(self):
         data = self.load_from_file('loadbalancer/single.json')
 
-        url = self.base_url + "load_balancers"
+        url = f"{self.base_url}load_balancers"
         responses.add(responses.POST,
                       url,
                       body=data,
@@ -109,7 +109,7 @@ class TestLoadBalancer(BaseTest):
     def test_create_tag(self):
         data = self.load_from_file('loadbalancer/single_tag.json')
 
-        url = self.base_url + "load_balancers"
+        url = f"{self.base_url}load_balancers"
         responses.add(responses.POST,
                       url,
                       body=data,
@@ -139,8 +139,9 @@ class TestLoadBalancer(BaseTest):
                                        token=self.token).create()
         resp_rules = lb.forwarding_rules
 
-        self.assertEqual(responses.calls[0].request.url,
-                         self.base_url + 'load_balancers')
+        self.assertEqual(
+            responses.calls[0].request.url, f'{self.base_url}load_balancers'
+        )
         self.assertEqual(lb.id, '4de7ac8b-495b-4884-9a69-1050c6793cd6')
         self.assertEqual(lb.algorithm, 'round_robin')
         self.assertEqual(lb.ip, '104.131.186.248')
@@ -166,7 +167,7 @@ class TestLoadBalancer(BaseTest):
     def test_create_exception(self):
         data = self.load_from_file('loadbalancer/single_tag.json')
 
-        url = self.base_url + "load_balancers/"
+        url = f"{self.base_url}load_balancers/"
         responses.add(responses.POST,
                       url,
                       body=data,
@@ -264,9 +265,7 @@ class TestLoadBalancer(BaseTest):
         lb = digitalocean.LoadBalancer(**res['load_balancer'])
         lb.health_check = digitalocean.HealthCheck(**res['load_balancer']['health_check'])
         lb.sticky_sessions = digitalocean.StickySessions(**res['load_balancer']['sticky_sessions'])
-        rules = list()
-        for rule in lb.forwarding_rules:
-            rules.append(digitalocean.ForwardingRule(**rule))
+        rules = [digitalocean.ForwardingRule(**rule) for rule in lb.forwarding_rules]
         self.assertEqual(lb.id, self.lb_id)
         self.assertEqual(lb.region['slug'], 'nyc3')
         self.assertEqual(lb.algorithm, 'least_connections')

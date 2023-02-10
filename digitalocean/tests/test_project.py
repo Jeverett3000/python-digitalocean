@@ -69,7 +69,7 @@ class TestProject(BaseTest):
         project = digitalocean.Project(token=self.token,
                                        id="4e1bfbc3-dc3e-41f2-a18f-1b4d7ba71679")
 
-        project_path = "projects/" + project.id
+        project_path = f"projects/{project.id}"
         url = self.base_url + project_path
         responses.add(responses.PUT,
                       url,
@@ -95,7 +95,7 @@ class TestProject(BaseTest):
         data = self.load_from_file('projects/project_resources.json')
         resource_project = digitalocean.Project(token=self.token,
                                                 id="4e1bfbc3-dc3e-41f2-a18f-1b4d7ba71679")
-        url = self.base_url + 'projects/' + resource_project.id + "/resources"
+        url = f'{self.base_url}projects/{resource_project.id}/resources'
         responses.add(responses.GET, url,
                       body=data,
                       status=200,
@@ -107,7 +107,7 @@ class TestProject(BaseTest):
 
     @responses.activate
     def test_delete(self):
-        url = self.base_url + "projects/4e1bfbc3-dc3e-41f2-a18f-1b4d7ba71679"
+        url = f"{self.base_url}projects/4e1bfbc3-dc3e-41f2-a18f-1b4d7ba71679"
         responses.add(responses.DELETE,
                       url,
                       status=204,
@@ -124,7 +124,7 @@ class TestProject(BaseTest):
         project = digitalocean.Project(token=self.token,
                                        id="default")
 
-        project_path = "projects/" + project.id
+        project_path = f"projects/{project.id}"
         url = self.base_url + project_path
         responses.add(responses.PUT,
                       url,
@@ -150,7 +150,7 @@ class TestProject(BaseTest):
         data = self.load_from_file('projects/assign_resources.json')
         resource_project = digitalocean.Project(token=self.token,
                                                 id="4e1bfbc3-dc3e-41f2-a18f-1b4d7ba71679")
-        url = self.base_url + 'projects/' + resource_project.id + "/resources"
+        url = f'{self.base_url}projects/{resource_project.id}/resources'
 
         responses.add(responses.POST, url,
                       body=data,
@@ -171,7 +171,7 @@ class TestProject(BaseTest):
         data = self.load_from_file('projects/project_resources.json')
         resource_project = digitalocean.Project(token=self.token,
                                                 id="default")
-        url = self.base_url + 'projects/' + resource_project.id + "/resources"
+        url = f'{self.base_url}projects/{resource_project.id}/resources'
         responses.add(responses.GET, url,
                       body=data,
                       status=200,
@@ -186,7 +186,7 @@ class TestProject(BaseTest):
         data = self.load_from_file('projects/assign_resources.json')
         resource_project = digitalocean.Project(token=self.token,
                                                 id="default")
-        url = self.base_url + 'projects/' + resource_project.id + "/resources"
+        url = f'{self.base_url}projects/{resource_project.id}/resources'
 
         responses.add(responses.POST, url,
                       body=data,

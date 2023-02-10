@@ -16,4 +16,4 @@ class Size(BaseAPI):
         super(Size, self).__init__(*args, **kwargs)
 
     def __str__(self):
-        return "%s" % (self.slug)
+        return f"{self.slug}"

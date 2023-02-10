@@ -181,7 +181,7 @@ class LoadBalancer(BaseAPI):
 
         Requires self.id to be set.
         """
-        data = self.get_data('load_balancers/%s' % self.id, type=GET)
+        data = self.get_data(f'load_balancers/{self.id}', type=GET)
         load_balancer = data['load_balancer']
 
         # Setting the attribute values
@@ -193,9 +193,7 @@ class LoadBalancer(BaseAPI):
                 sticky_ses = StickySessions(**load_balancer['sticky_sessions'])
                 setattr(self, attr, sticky_ses)
             elif attr == 'forwarding_rules':
-                rules = list()
-                for rule in load_balancer['forwarding_rules']:
-                    rules.append(ForwardingRule(**rule))
+                rules = [ForwardingRule(**rule) for rule in load_balancer['forwarding_rules']]
                 setattr(self, attr, rules)
             else:
                 setattr(self, attr, load_balancer[attr])
@@ -261,9 +259,7 @@ class LoadBalancer(BaseAPI):
         if self.sticky_sessions:
             params['sticky_sessions'] = self.sticky_sessions.__dict__
 
-        data = self.get_data('load_balancers', type=POST, params=params)
-
-        if data:
+        if data := self.get_data('load_balancers', type=POST, params=params):
             self.id = data['load_balancer']['id']
             self.ip = data['load_balancer']['ip']
             self.algorithm = data['load_balancer']['algorithm']
@@ -310,15 +306,13 @@ class LoadBalancer(BaseAPI):
         if self.sticky_sessions:
             data['sticky_sessions'] = self.sticky_sessions.__dict__
 
-        return self.get_data("load_balancers/%s" % self.id,
-                             type=PUT,
-                             params=data)
+        return self.get_data(f"load_balancers/{self.id}", type=PUT, params=data)
 
     def destroy(self):
         """
         Destroy the LoadBalancer
         """
-        return self.get_data('load_balancers/%s' % self.id, type=DELETE)
+        return self.get_data(f'load_balancers/{self.id}', type=DELETE)
 
     def add_droplets(self, droplet_ids):
         """
@@ -328,9 +322,9 @@ class LoadBalancer(BaseAPI):
             droplet_ids (obj:`list` of `int`): A list of Droplet IDs
         """
         return self.get_data(
-            "load_balancers/%s/droplets" % self.id,
+            f"load_balancers/{self.id}/droplets",
             type=POST,
-            params={"droplet_ids": droplet_ids}
+            params={"droplet_ids": droplet_ids},
         )
 
     def remove_droplets(self, droplet_ids):
@@ -341,9 +335,9 @@ class LoadBalancer(BaseAPI):
             droplet_ids (obj:`list` of `int`): A list of Droplet IDs
         """
         return self.get_data(
-            "load_balancers/%s/droplets" % self.id,
+            f"load_balancers/{self.id}/droplets",
             type=DELETE,
-            params={"droplet_ids": droplet_ids}
+            params={"droplet_ids": droplet_ids},
         )
 
     def add_forwarding_rules(self, forwarding_rules):
@@ -356,9 +350,9 @@ class LoadBalancer(BaseAPI):
         rules_dict = [rule.__dict__ for rule in forwarding_rules]
 
         return self.get_data(
-            "load_balancers/%s/forwarding_rules" % self.id,
+            f"load_balancers/{self.id}/forwarding_rules",
             type=POST,
-            params={"forwarding_rules": rules_dict}
+            params={"forwarding_rules": rules_dict},
         )
 
     def remove_forwarding_rules(self, forwarding_rules):
@@ -371,10 +365,10 @@ class LoadBalancer(BaseAPI):
         rules_dict = [rule.__dict__ for rule in forwarding_rules]
 
         return self.get_data(
-            "load_balancers/%s/forwarding_rules" % self.id,
+            f"load_balancers/{self.id}/forwarding_rules",
             type=DELETE,
-            params={"forwarding_rules": rules_dict}
+            params={"forwarding_rules": rules_dict},
         )
 
     def __str__(self):
-        return "%s" % (self.id)
+        return f"{self.id}"

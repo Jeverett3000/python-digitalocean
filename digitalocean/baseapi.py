@@ -63,7 +63,7 @@ class BaseAPI(object):
 
         self._session = requests.Session()
 
-        for attr in kwargs.keys():
+        for attr in kwargs:
             setattr(self, attr, kwargs[attr])
 
         parsed_url = urlparse.urlparse(self.end_point)
@@ -130,13 +130,12 @@ class BaseAPI(object):
         # remove token from log
         headers_str = str(headers)
         for i, token in enumerate(self.tokens):
-            headers_str = headers_str.replace(token.strip(), 'TOKEN%s' % i)
-        self._log.debug('%s %s %s:%s %s %s' %
-                        (type, url, payload, params, headers_str, timeout))
+            headers_str = headers_str.replace(token.strip(), f'TOKEN{i}')
+        self._log.debug(f'{type} {url} {payload}:{params} {headers_str} {timeout}')
 
         first_tried_token = self._last_used
         while True:
-            headers.update({'Authorization': 'Bearer ' + self.token})
+            headers.update({'Authorization': f'Bearer {self.token}'})
             req = requests_method(url, **kwargs)
             if req.status_code == 429:
                 self._last_used = (self._last_used + 1) % len(self.tokens)
@@ -183,18 +182,12 @@ class BaseAPI(object):
     @property
     def token(self):
         # use all the tokens round-robin style, change on reaching Ratelimit
-        if self.tokens:
-            return self.tokens[self._last_used]
-        return ""
+        return self.tokens[self._last_used] if self.tokens else ""
 
     @token.setter
     def token(self, token):
         self._last_used = 0
-        if isinstance(token, list):
-            self.tokens = token
-        else:
-            # for backward compatibility
-            self.tokens = [token]
+        self.tokens = token if isinstance(token, list) else [token]
 
     def get_timeout(self):
         """
@@ -202,14 +195,13 @@ class BaseAPI(object):
             To set a timeout, use the REQUEST_TIMEOUT_ENV_VAR environment
             variable.
         """
-        timeout_str = os.environ.get(REQUEST_TIMEOUT_ENV_VAR)
-        if timeout_str:
+        if timeout_str := os.environ.get(REQUEST_TIMEOUT_ENV_VAR):
             try:
                 return float(timeout_str)
             except:
-                self._log.error('Failed parsing the request read timeout of '
-                                '"%s". Please use a valid float number!' %
-                                        timeout_str)
+                self._log.error(
+                    f'Failed parsing the request read timeout of "{timeout_str}". Please use a valid float number!'
+                )
         return None
 
     def get_data(self, url, type=GET, params=None):
@@ -221,7 +213,7 @@ class BaseAPI(object):
             Pagination is automatically detected and handled accordingly
         """
         if params is None:
-            params = dict()
+            params = {}
 
         # If per_page is not set, make sure it has a sane default
         if type is GET:
@@ -242,9 +234,7 @@ class BaseAPI(object):
             data = req.json()
 
         except ValueError as e:
-            raise JSONReadError(
-                'Read failed from DigitalOcean: %s' % str(e)
-            )
+            raise JSONReadError(f'Read failed from DigitalOcean: {str(e)}')
 
         if not req.ok:
             msg = [data[m] for m in ("id", "message") if m in data][1]
@@ -263,10 +253,10 @@ class BaseAPI(object):
             return data
 
     def __str__(self):
-        return "<%s>" % self.__class__.__name__
+        return f"<{self.__class__.__name__}>"
 
     def __unicode__(self):
-        return u"%s" % self.__str__()
+        return f"{self.__str__()}"
 
     def __repr__(self):
         return str(self)

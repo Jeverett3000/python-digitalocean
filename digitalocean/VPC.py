@@ -55,7 +55,7 @@ class VPC(BaseAPI):
 
             Requires self.id to be set.
         """
-        data = self.get_data("vpcs/%s" % self.id)
+        data = self.get_data(f"vpcs/{self.id}")
         vpc = data["vpc"]
 
         for attr in vpc.keys():
@@ -74,9 +74,7 @@ class VPC(BaseAPI):
             "ip_range": self.ip_range
         }
 
-        data = self.get_data("vpcs", type=POST, params=params)
-
-        if data:
+        if data := self.get_data("vpcs", type=POST, params=params):
             self.id = data['vpc']['id']
             self.name = data['vpc']['name']
             self.region = data['vpc']['region']
@@ -95,9 +93,7 @@ class VPC(BaseAPI):
             Args:
                 name (str): The new name for the VPC
         """
-        data = self.get_data("vpcs/%s" % self.id,
-                             type=PATCH,
-                             params={"name": new_name})
+        data = self.get_data(f"vpcs/{self.id}", type=PATCH, params={"name": new_name})
 
         vpc = data["vpc"]
 
@@ -113,9 +109,7 @@ class VPC(BaseAPI):
             Args:
                 name (str): The new name for the VPC
         """
-        data = self.get_data("vpcs/%s" % self.id,
-                             type=PATCH,
-                             params={"name": new_name})
+        data = self.get_data(f"vpcs/{self.id}", type=PATCH, params={"name": new_name})
 
         vpc = data["vpc"]
 
@@ -128,7 +122,7 @@ class VPC(BaseAPI):
         """
             Delete the VPC
         """
-        return self.get_data("vpcs/%s" % self.id, type=DELETE)
+        return self.get_data(f"vpcs/{self.id}", type=DELETE)
 
     def __str__(self):
-        return "<VPC: %s %s>" % (self.id, self.name)
+        return f"<VPC: {self.id} {self.name}>"

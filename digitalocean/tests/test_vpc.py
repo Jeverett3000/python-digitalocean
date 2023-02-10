@@ -16,7 +16,7 @@ class TestVPC(BaseTest):
     @responses.activate
     def test_load(self):
         data = self.load_from_file('vpcs/single.json')
-        url = self.base_url + 'vpcs/' + self.vpc_id
+        url = f'{self.base_url}vpcs/{self.vpc_id}'
 
         responses.add(responses.GET,
                       url,
@@ -40,7 +40,7 @@ class TestVPC(BaseTest):
     @responses.activate
     def test_create(self):
         data = self.load_from_file('vpcs/single.json')
-        url = self.base_url + 'vpcs'
+        url = f'{self.base_url}vpcs'
 
         responses.add(responses.POST,
                       url,
@@ -64,7 +64,7 @@ class TestVPC(BaseTest):
     @responses.activate
     def test_rename(self):
         data = self.load_from_file('vpcs/single.json')
-        url = self.base_url + 'vpcs/' + self.vpc_id
+        url = f'{self.base_url}vpcs/{self.vpc_id}'
         responses.add(responses.PATCH,
                       url,
                       body=data,
@@ -80,7 +80,7 @@ class TestVPC(BaseTest):
 
     @responses.activate
     def test_destroy(self):
-        url = self.base_url + 'vpcs/' + self.vpc_id
+        url = f'{self.base_url}vpcs/{self.vpc_id}'
         responses.add(responses.DELETE,
                       url,
                       status=204,
